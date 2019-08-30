@@ -27,6 +27,10 @@ class Main(tk.Frame):
 
         self.tree = ttk.Treeview(self, columns=('ID', 'description', 'costs', 'total'), height=15, show='headings', )
 
+        v_scrollbar = ttk.Scrollbar(orient="vertical", command=self.tree.yview)   # СкроллБар вертикальный для ТриВью
+        #  v_scrollbar.place(x=634, y=200, height=200 + 20)
+        self.tree.configure(yscrollcommand=v_scrollbar.set)
+
         self.tree.column('ID', width=30, anchor=tk.CENTER)
         self.tree.column('description', width=365, anchor=tk.CENTER)
         self.tree.column('costs', width=150, anchor=tk.CENTER)
