@@ -28,7 +28,7 @@ class Main(tk.Frame):
         self.tree = ttk.Treeview(self, columns=('ID', 'description', 'costs', 'total'), height=15, show='headings', )
 
         v_scrollbar = ttk.Scrollbar(orient="vertical", command=self.tree.yview)   # СкроллБар вертикальный для ТриВью
-        #  v_scrollbar.place(x=634, y=200, height=200 + 20)
+        v_scrollbar.place(x=630, y=140, height=280 + 20)
         self.tree.configure(yscrollcommand=v_scrollbar.set)
 
         self.tree.column('ID', width=30, anchor=tk.CENTER)
@@ -143,6 +143,21 @@ if __name__ == "__main__":
     app = Main(root)
     app.pack()
     root.title("Документы ИТ отдела")
-    root.geometry("650x450+300+200")
+
+    root.update_idletasks()   # ставим окно по середине экрана и шириной по элементам
+    s = root.geometry()
+    s = s.split('+')
+    s = s[0].split('x')
+    width_root = int(s[0])
+    height_root = int(s[1])
+
+    w = root.winfo_screenwidth()
+    h = root.winfo_screenheight()
+    w = w // 2
+    h = h // 2
+    w = w - width_root // 2
+    h = h - height_root // 2
+    root.geometry('+{}+{}'.format(w, h))
+    # root.geometry("650x450+300+200")
     root.resizable(False, False)
     root.mainloop()
