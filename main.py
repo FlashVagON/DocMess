@@ -3,45 +3,50 @@ from tkinter import ttk
 import sqlite3
 
 
-class Main(tk.Frame):
+class Main(tk.Frame):   # Основное окно программы
     def __init__(self, root):
         super().__init__(root)
         self.init_main()
         self.db = db
         self.view_records()
 
-    def init_main(self):
-        toolbar = tk.Frame(bg='#d7d8e0', bd=2)
+    def init_main(self):   # Размещение всех виджетов и размеров на основном окне
+        toolbar = tk.Frame(bg='#d7d8e0', bd=2)  # Тулбар верхний для размещения на нем активных картинок
         toolbar.pack(side=tk.TOP, fill=tk.X)
 
         self.add_img = tk.PhotoImage(file='icon-add-0.gif')
         btn_open_dialog = tk.Button(toolbar, text='Добавить письмо', command=self.open_dialog, bg='#d7d8e0', bd=0,
                                     compound=tk.TOP, image=self.add_img)
-        btn_open_dialog.pack(side=tk.LEFT)
+        btn_open_dialog.pack(side=tk.LEFT)  # вставка активного изображения Добавить письмо
 
         self.edit_img = tk.PhotoImage(file='edit.gif')
         btn_edit_dialog = tk.Button(toolbar, text='Редактировать письмо', command=self.open_update_dialog, bg='#d7d8e0',
                                     bd=0,
                                     compound=tk.TOP, image=self.edit_img)
-        btn_edit_dialog.pack(side=tk.LEFT)
+        btn_edit_dialog.pack(side=tk.LEFT)  # вставка активного изображения Редактировать письмо
 
-        self.tree = ttk.Treeview(self, columns=('ID', 'description', 'costs', 'total'), height=15, show='headings', )
+        self.tree = ttk.Treeview(self, columns=('ID', 'description', 'costs', 'total'), height=15, show='headings')
 
         v_scrollbar = ttk.Scrollbar(orient="vertical", command=self.tree.yview)   # СкроллБар вертикальный для ТриВью
-        v_scrollbar.place(x=630, y=140, height=280 + 20)
-        self.tree.configure(yscrollcommand=v_scrollbar.set)
+        v_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
+        self.tree.configure(yscroll=v_scrollbar.set)
 
-        self.tree.column('ID', width=30, anchor=tk.CENTER)
-        self.tree.column('description', width=365, anchor=tk.CENTER)
-        self.tree.column('costs', width=150, anchor=tk.CENTER)
-        self.tree.column('total', width=100, anchor=tk.CENTER)
+        h_scrollbar = ttk.Scrollbar(orient="horizontal", command=self.tree.xview)  # СкроллБар горизонтальный для ТриВью
+        h_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
+        self.tree.configure(xscroll=h_scrollbar.set)
+
+        self.tree.column('ID', minwidth=30, anchor=tk.CENTER)
+        self.tree.column('description', minwidth=365, anchor=tk.CENTER)
+        self.tree.column('costs', minwidth=150, anchor=tk.CENTER)
+        self.tree.column('total', minwidth=100, anchor=tk.CENTER, stretch=True)
 
         self.tree.heading('ID', text='ID')
         self.tree.heading('description', text='Наименование')
         self.tree.heading('costs', text='Статья Дохода\расхода')
         self.tree.heading('total', text='Сумма')
 
-        self.tree.pack()
+        self.tree.pack(side=tk.BOTTOM, fill=tk.Y)
+        # self.tree.config(height=len(self.tree.get_children()))
 
     def records(self, description, costs, total):
         self.db.insert_data(description, costs, total)
@@ -65,7 +70,7 @@ class Main(tk.Frame):
         Update()
 
 
-class Child(tk.Toplevel):
+class Child(tk.Toplevel):  # Класс окна второго уровня для добавления письма
     def __init__(self):
         super().__init__(root)
         self.init_child()
@@ -106,7 +111,7 @@ class Child(tk.Toplevel):
         self.focus_set()
 
 
-class Update(Child):
+class Update(Child):  # Класс открывает тоже окно второго уровня для редактирования Писем
     def __init__(self):
         super().__init__()
         self.init_edit()
@@ -122,7 +127,7 @@ class Update(Child):
         self.btn_ok.destroy()
 
 
-class DB:
+class DB:  # Класс работы с базой данных
     def __init__(self):
         self.conn = sqlite3.connect('letters.db')
         self.c = self.conn.cursor()
@@ -159,5 +164,5 @@ if __name__ == "__main__":
     h = h - height_root // 2
     root.geometry('+{}+{}'.format(w, h))
     # root.geometry("650x450+300+200")
-    root.resizable(False, False)
+    root.resizable(True, False)
     root.mainloop()
