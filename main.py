@@ -10,51 +10,84 @@ class Main(tk.Frame):   # Основное окно программы
         self.db = db
         self.view_records()
 
-    def init_main(self):   # Размещение всех виджетов и размеров на основном окне
-        toolbar = tk.Frame(bg='#d7d8e0', bd=2)  # Тулбар верхний для размещения на нем активных картинок
+    # Размещение всех виджетов и размеров на основном окне
+    def init_main(self):
+
+        # Тулбар верхний для размещения на нем активных картинок
+        toolbar = tk.Frame(bg='#d7d8e0', bd=2)
         toolbar.pack(side=tk.TOP, fill=tk.X)
 
+        # вставка активного изображения Добавить письмо
         self.add_img = tk.PhotoImage(file='icon-add-0.gif')
         btn_open_dialog = tk.Button(toolbar, text='Добавить письмо', command=self.open_dialog, bg='#d7d8e0', bd=0,
                                     compound=tk.TOP, image=self.add_img)
-        btn_open_dialog.pack(side=tk.LEFT)  # вставка активного изображения Добавить письмо
+        btn_open_dialog.pack(side=tk.LEFT)
 
+        # вставка активного изображения Редактировать письмо
         self.edit_img = tk.PhotoImage(file='edit.gif')
         btn_edit_dialog = tk.Button(toolbar, text='Редактировать письмо', command=self.open_update_dialog, bg='#d7d8e0',
                                     bd=0,
                                     compound=tk.TOP, image=self.edit_img)
-        btn_edit_dialog.pack(side=tk.LEFT)  # вставка активного изображения Редактировать письмо
+        btn_edit_dialog.pack(side=tk.LEFT)
 
-        self.tree = ttk.Treeview(self, columns=('ID', 'description', 'costs', 'total'), height=15, show='headings')
+        # Создаем Тривью с колонками
+        self.tree = ttk.Treeview(self, columns=('ID', 'create_date', 'in_number', 'in_date', 'out_number',
+                                                'out_date', 'about', 'deadend', 'out_mail', 'date_came',
+                                                'state', 'mail_date'), height=15, show='headings')
 
-        v_scrollbar = ttk.Scrollbar(orient="vertical", command=self.tree.yview)   # СкроллБар вертикальный для ТриВью
+        # СкроллБар вертикальный для ТриВью
+        v_scrollbar = ttk.Scrollbar(orient="vertical", command=self.tree.yview)
         v_scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.tree.configure(yscroll=v_scrollbar.set)
 
-        h_scrollbar = ttk.Scrollbar(orient="horizontal", command=self.tree.xview)  # СкроллБар горизонтальный для ТриВью
+        # СкроллБар горизонтальный для ТриВью
+        h_scrollbar = ttk.Scrollbar(orient="horizontal", command=self.tree.xview)
         h_scrollbar.pack(side=tk.BOTTOM, fill=tk.X)
         self.tree.configure(xscroll=h_scrollbar.set)
 
-        self.tree.column('ID', minwidth=30, anchor=tk.CENTER)
-        self.tree.column('description', minwidth=365, anchor=tk.CENTER)
-        self.tree.column('costs', minwidth=150, anchor=tk.CENTER)
-        self.tree.column('total', minwidth=100, anchor=tk.CENTER, stretch=True)
+        # размеры колонок Тривью
+        self.tree.column('ID', width=20, anchor=tk.CENTER)
+        self.tree.column('create_date', width=90, anchor=tk.CENTER)
+        self.tree.column('in_number', width=80, anchor=tk.CENTER)
+        self.tree.column('in_date', width=90, anchor=tk.CENTER)
+        self.tree.column('out_number', width=90, anchor=tk.CENTER)
+        self.tree.column('out_date', width=95, anchor=tk.CENTER)
+        self.tree.column('about', width=300, anchor=tk.CENTER)
+        self.tree.column('deadend', width=90, anchor=tk.CENTER)
+        self.tree.column('out_mail', width=80, anchor=tk.CENTER)
+        self.tree.column('date_came', width=110, anchor=tk.CENTER)
+        self.tree.column('state', width=70, anchor=tk.CENTER)
+        self.tree.column('mail_date', width=90, anchor=tk.CENTER)
 
+        # названия колонок в тривью
         self.tree.heading('ID', text='ID')
-        self.tree.heading('description', text='Наименование')
-        self.tree.heading('costs', text='Статья Дохода\расхода')
-        self.tree.heading('total', text='Сумма')
+        self.tree.heading('create_date', text='Дата создания')
+        self.tree.heading('in_number', text='№ входящий')
+        self.tree.heading('in_date', text='Дата входящая')
+        self.tree.heading('out_number', text='№ исходящий')
+        self.tree.heading('out_date', text='Дата исходящая')
+        self.tree.heading('about', text='Краткое описание')
+        self.tree.heading('deadend', text='Дата контроля')
+        self.tree.heading('out_mail', text='mail ответа')
+        self.tree.heading('date_came', text='Дата поступления')
+        self.tree.heading('state', text='Статус')
+        self.tree.heading('mail_date', text='Дата отправки')
 
-        self.tree.pack(side=tk.BOTTOM, fill=tk.Y)
+        self.tree.pack(side=tk.BOTTOM, fill=tk.BOTH)
         # self.tree.config(height=len(self.tree.get_children()))
 
-    def records(self, description, costs, total):
-        self.db.insert_data(description, costs, total)
+    def records(self, create_date, in_number, in_date, out_number, out_date, about, deadend, out_mail,
+                date_came, state, mail_date):
+        self.db.insert_data(create_date, in_number, in_date, out_number, out_date, about, deadend, out_mail,
+                            date_came, state, mail_date)
         self.view_records()
 
-    def update_record(self, description, costs, total):
-        self.db.c.execute('''UPDATE letters SET description=?, costs=?, total=? WHERE ID=?''',
-                          (description, costs, total, self.tree.set(self.tree.selection()[0], '#1')))
+    def update_record(self, create_date, in_number, in_date, out_number, out_date, about, deadend, out_mail,
+                      date_came, state, mail_date):
+        self.db.c.execute('''UPDATE letters SET create_date=?, in_number=?, in_date=?, out_number=?, out_date=?, 
+        about=?, deadend=?, out_mail=?, date_came=?, state=?, mail_date=? WHERE ID=?''',
+                          (create_date, in_number, in_date, out_number, out_date, about, deadend, out_mail,
+                           date_came, state, mail_date, self.tree.set(self.tree.selection()[0], '#1')))
         self.db.conn.commit()
         self.view_records()
 
@@ -128,17 +161,24 @@ class Update(Child):  # Класс открывает тоже окно втор
 
 
 class DB:  # Класс работы с базой данных
+    # Создание базы данных SQLite3 (если существует то просто открывает)
     def __init__(self):
         self.conn = sqlite3.connect('letters.db')
         self.c = self.conn.cursor()
         self.c.execute(
-            '''CREATE TABLE IF NOT EXISTS letters (id integer primary key, description text, costs text, total real)'''
+            '''CREATE TABLE IF NOT EXISTS letters (id integer primary key, create_date date, in_number text, 
+            in_date date, out_number text, out_date date, about text, deadend date, out_mail text, date_came date,
+            state text, mail_date date)'''
         )
         self.conn.commit()
 
-    def insert_data(self, description, costs, total):
-        self.c.execute('''INSERT INTO letters (description, costs, total) VALUES (?, ?, ?)''',
-                       (description, costs, total))
+    # Добавление данных в БД
+    def insert_data(self, create_date, in_number, in_date, out_number, out_date, about, deadend, out_mail,
+                    date_came, state, mail_date):
+        self.c.execute('''INSERT INTO letters (create_date, in_number, in_date, out_number, out_date, about, 
+        deadend, out_mail, date_came, state, mail_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',
+                       (create_date, in_number, in_date, out_number, out_date, about, deadend, out_mail,
+                        date_came, state, mail_date))
         self.conn.commit()
 
 
@@ -164,5 +204,5 @@ if __name__ == "__main__":
     h = h - height_root // 2
     root.geometry('+{}+{}'.format(w, h))
     # root.geometry("650x450+300+200")
-    root.resizable(True, False)
+    root.resizable(True, True)
     root.mainloop()
